@@ -1,4 +1,5 @@
 bokeh==0.13.0
+decorator==4.3.0
 Jinja2==2.10
 MarkupSafe==1.0
 numpy==1.15.0
@@ -11,3 +12,4 @@ pytz==2018.5
 PyYAML==3.13
 six==1.11.0
 tornado==5.1
+wbdata==0.2.7
