@@ -7,5 +7,5 @@ Setup:
 3. pip3 install pandas
 4. pip3 install 'bokeh>=0.13'
 
-Run app
-5. bokeh serve --show main.py
+Run app:
+ - bokeh serve --show main.py
