@@ -24,6 +24,14 @@ for year in years:
     df = pd.concat([p.loc[:, :, year], region_name], axis=1).reset_index()
     data[year] = df.to_dict('series')
 
+fertility_df.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/fertility_df.csv')
+life_expectancy_df.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/life_expectancy_df.csv')
+population_df_size.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/population_df_size.csv')
+regions_df.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/regions_df.csv')
+years.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/years.csv')
+regions_list.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/regions_list.csv')
+
+print('saved')
 source = ColumnDataSource(data=data[years[0]])
 
 plot = figure(x_range=(1, 9), y_range=(20, 100), title='Gapminder Data', plot_height=300)
