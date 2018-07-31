@@ -9,11 +9,13 @@ from bokeh.models import (ColumnDataSource, HoverTool, SingleIntervalTicker,
 from bokeh.palettes import Spectral6
 from bokeh.plotting import figure
 
-from data import process_data
+from process_data import process_data
 
-fertility_df, life_expectancy_df, population_df_size, regions_df, years, regions_list = process_data()
+#fertility_df, life_expectancy_df, population_df_size, regions_df, years, regions_list = process_data()
+x_dim, y_dim, bubble_dim, regions_df, years, regions_list, dims = process_data()
 
-p = pd.Panel({'fertility': fertility_df, 'life': life_expectancy_df, 'population': population_df_size})
+
+p = pd.Panel({dims[0]: x_dim, dims[1]: x_dim, dims[2]: bubble_dim})
 
 data = {}
 
@@ -24,30 +26,26 @@ for year in years:
     df = pd.concat([p.loc[:, :, year], region_name], axis=1).reset_index()
     data[year] = df.to_dict('series')
 
-fertility_df.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/fertility_df.csv')
-life_expectancy_df.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/life_expectancy_df.csv')
-population_df_size.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/population_df_size.csv')
-regions_df.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/regions_df.csv')
-years.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/years.csv')
-regions_list.to_csv('/home/pedro/repos/github_repos/gapminder_wordbank/regions_list.csv')
-
 print('saved')
 source = ColumnDataSource(data=data[years[0]])
+# Palette length does not match number of factors. ['East Asia & Pacific', 'North America'] will be assigned to `nan_color` gray
+# warnings.warn("Palette length does not match number of factors. %s will be assigned to `nan_color` %s" % (extra_factors, self.nan_color))
 
-plot = figure(x_range=(1, 9), y_range=(20, 100), title='Gapminder Data', plot_height=300)
-plot.xaxis.ticker = SingleIntervalTicker(interval=1)
-plot.xaxis.axis_label = "Children per woman (total fertility)"
-plot.yaxis.ticker = SingleIntervalTicker(interval=20)
-plot.yaxis.axis_label = "Life expectancy at birth (years)"
+
+plot = figure(x_range=(245, 136000), y_range=(0.5, 26.5), title='Gapminder Data', plot_height=300)
+plot.xaxis.ticker = SingleIntervalTicker(interval=15000)
+plot.xaxis.axis_label = "GDP Per Capita ($USD)"
+plot.yaxis.ticker = SingleIntervalTicker(interval=1)
+plot.yaxis.axis_label = "Unemployment Rate"
 
 label = Label(x=1.1, y=18, text=str(years[0]), text_font_size='70pt', text_color='#eeeeee')
 plot.add_layout(label)
 
 color_mapper = CategoricalColorMapper(palette=Spectral6, factors=regions_list)
 plot.circle(
-    x='fertility',
-    y='life',
-    size='population',
+    x='gdp_per_capita',
+    y='unemployment',
+    size='tech_export_rate',
     source=source,
     fill_color={'field': 'region', 'transform': color_mapper},
     fill_alpha=0.8,
