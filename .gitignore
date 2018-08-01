@@ -47,7 +47,6 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 *.ini
-*.ipynb
 *.ipynb_checkpoints
 
 # Translations
