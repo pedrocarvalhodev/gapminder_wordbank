@@ -14,37 +14,43 @@ from bokeh.plotting import figure
 from process_data import process_data
 
 
-#fertility_df, life_expectancy_df, population_df_size, regions_df, years, regions_list = process_data()
 x_dim, y_dim, bubble_dim, regions_df, years, regions_list, dims = process_data()
-
-p = pd.Panel({dims[0]: x_dim, dims[1]: x_dim, dims[2]: bubble_dim})
+print("Loaded Data.")
+list(regions_df[regions_df.index.isin(list(x_dim.index))].Group.unique())
+p = pd.Panel({dims[0]: (x_dim / 1000).astype(int), 
+              dims[1]: y_dim.astype(int), 
+              dims[2]: bubble_dim.astype(int)})
 
 data = {}
-
 region_name = regions_df[regions_df.index.isin(list(x_dim.index))].Group
 region_name.name = 'region'
-
+regions_list=list(region_name.unique())
+print(regions_list)
 for year in years:
     df = pd.concat([p.loc[:, :, year], region_name], axis=1).reset_index()
     data[year] = df.to_dict('series')
 
 print('saved')
+print("1.")
 source = ColumnDataSource(data=data[years[0]])
-
-plot = figure(x_range=(245, 136000), y_range=(0.5, 26.5), title='Gapminder Data', plot_height=300)
-plot.xaxis.ticker = SingleIntervalTicker(interval=15000)
+print("2.")
+plot = figure(x_range=(7, 68), y_range=(0.0, 28), title='Gapminder Data', plot_height=300)
+plot.xaxis.ticker = SingleIntervalTicker(interval=5)
 plot.xaxis.axis_label = "GDP Per Capita ($USD)"
 plot.yaxis.ticker = SingleIntervalTicker(interval=1)
 plot.yaxis.axis_label = "Unemployment Rate"
-
+print("3.")
 label = Label(x=1.1, y=18, text=str(years[0]), text_font_size='70pt', text_color='#eeeeee')
 plot.add_layout(label)
-
+print("4.")
+print(regions_list)
+print(Spectral6)
 color_mapper = CategoricalColorMapper(palette=Spectral6, factors=regions_list)
+
 plot.circle(
-    x='gdp_per_capita',
-    y='unemployment',
-    size='tech_export_rate',
+    x='gdp_pc',
+    y='unemployment_rate',
+    size='tech_export',    
     source=source,
     fill_color={'field': 'region', 'transform': color_mapper},
     fill_alpha=0.8,
@@ -54,7 +60,6 @@ plot.circle(
     legend=field('region'),
 )
 plot.add_tools(HoverTool(tooltips="@index", show_arrow=False, point_policy='follow_mouse'))
-
 
 def animate_update():
     year = slider.value + 1

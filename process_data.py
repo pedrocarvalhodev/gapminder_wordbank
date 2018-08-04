@@ -29,7 +29,7 @@ def process_data():
     y_dim = get_indicator(x="UNEMPSA_", y="unemployment")
     bubble_dim = get_indicator(x="TX.VAL.TECH.MF.ZS", y="tech_exp")
     years = list(x_dim.columns)
-    #main_countries=list(x_dim.index[:15])
+    
     a=list(x_dim.index)
     b=list(y_dim.index)
     c=list(bubble_dim.index)
@@ -43,5 +43,5 @@ def process_data():
     regions_list = list(regions_df.Group.unique())
 
     return x_dim, y_dim, bubble_dim, regions_df, years, regions_list, ["gdp_pc", 
-                                                                    "unemployment_rate", 
-                                                                    "tech_export"] 
+                                                                        "unemployment_rate", 
+                                                                        "tech_export"] 
