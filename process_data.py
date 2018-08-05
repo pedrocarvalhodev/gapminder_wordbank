@@ -40,7 +40,7 @@ def process_data():
     bubble_dim = bubble_dim[bubble_dim.index.isin(main_countries)]
 
     regions_df = get_regions()
-    regions_list = list(regions_df.Group.unique())
+    regions_list=list(regions_df[regions_df.index.isin(list(x_dim.index))].Group.unique())
 
     return x_dim, y_dim, bubble_dim, regions_df, years, regions_list, ["gdp_pc", 
                                                                         "unemployment_rate", 

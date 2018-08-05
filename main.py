@@ -13,8 +13,12 @@ from bokeh.palettes import Spectral6
 from bokeh.plotting import figure
 from process_data import process_data
 
+path='/home/pedro/repos/github_repos/gapminder_wordbank/data/'
+
 
 x_dim, y_dim, bubble_dim, regions_df, years, regions_list, dims = process_data()
+
+
 print("Loaded Data.")
 list(regions_df[regions_df.index.isin(list(x_dim.index))].Group.unique())
 p = pd.Panel({dims[0]: (x_dim / 1000).astype(int), 
@@ -22,10 +26,6 @@ p = pd.Panel({dims[0]: (x_dim / 1000).astype(int),
               dims[2]: bubble_dim.astype(int)})
 
 data = {}
-region_name = regions_df[regions_df.index.isin(list(x_dim.index))].Group
-region_name.name = 'region'
-regions_list=list(region_name.unique())
-print(regions_list)
 for year in years:
     df = pd.concat([p.loc[:, :, year], region_name], axis=1).reset_index()
     data[year] = df.to_dict('series')
@@ -34,7 +34,7 @@ print('saved')
 print("1.")
 source = ColumnDataSource(data=data[years[0]])
 print("2.")
-plot = figure(x_range=(7, 68), y_range=(0.0, 28), title='Gapminder Data', plot_height=300)
+plot = figure(x_range=(7, 68), y_range=(0.0, 28), title='Gapminder Data', plot_height=250)
 plot.xaxis.ticker = SingleIntervalTicker(interval=5)
 plot.xaxis.axis_label = "GDP Per Capita ($USD)"
 plot.yaxis.ticker = SingleIntervalTicker(interval=1)
@@ -59,7 +59,7 @@ plot.circle(
     line_alpha=0.5,
     legend=field('region'),
 )
-plot.add_tools(HoverTool(tooltips="@index", show_arrow=False, point_policy='follow_mouse'))
+plot.add_tools(HoverTool(tooltips="@index", show_arrow=False, point_policy='snap_to_data')) #'follow_mouse'))
 
 def animate_update():
     year = slider.value + 1
@@ -82,7 +82,7 @@ def animate():
     global callback_id
     if button.label == '► Play':
         button.label = '❚❚ Pause'
-        callback_id = curdoc().add_periodic_callback(animate_update, 200)
+        callback_id = curdoc().add_periodic_callback(animate_update, 400)
     else:
         button.label = '► Play'
         curdoc().remove_periodic_callback(callback_id)
