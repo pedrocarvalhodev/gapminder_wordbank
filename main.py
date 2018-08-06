@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
+import argparse
 
 from bokeh.core.properties import field
 from bokeh.io import curdoc
@@ -11,12 +12,45 @@ from bokeh.models import (ColumnDataSource,
                           CategoricalColorMapper)
 from bokeh.palettes import Spectral6
 from bokeh.plotting import figure
-from process_data import process_data
+
+from process_data import get_data, indicator_by_code
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-s", "--save_data", action="store_true", 
+    help="-s : save info to data file")
+parser.add_argument("-r", "--read_data", action="store_true",
+    help="-r : read info to data file")
+
+args = parser.parse_args()
 
 path='/home/pedro/repos/github_repos/gapminder_wordbank/data/'
 
+if args.read_data:
+    try:
+        x_dim = pd.read_csv(path+'x_dim.csv', index_col='Country') 
+        y_dim = pd.read_csv(path+'y_dim.csv', index_col='Country')
+        bubble_dim = pd.read_csv(path+'bubble_dim.csv', index_col='Country')
+        regions_df = pd.read_csv(path+'regions_df.csv', index_col='Country')
+        years = list(x_dim.columns)
+        regions_list=list(regions_df[regions_df.index.isin(list(x_dim.index))].Group.unique())
+        dims = [indicator_by_code['x_dim'].get('name'),
+                indicator_by_code['y_dim'].get('name'),
+                indicator_by_code['bubble_dim'].get('name')]
+    except Exception as ex:
+        print(ex)
+else:
+    x_dim, y_dim, bubble_dim, regions_df, years, regions_list, dims = get_data()
 
-x_dim, y_dim, bubble_dim, regions_df, years, regions_list, dims = process_data()
+
+if args.save_data:
+    try:
+        x_dim.to_csv(path+'x_dim.csv', index=True) 
+        y_dim.to_csv(path+'y_dim.csv', index=True)
+        bubble_dim.to_csv(path+'bubble_dim.csv', index=True)
+        regions_df.to_csv(path+'regions_df.csv', index=True)
+    except Exception as ex:
+        print(ex)
+
 
 
 print("Loaded Data.")

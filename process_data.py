@@ -2,6 +2,20 @@
 import pandas
 import wbdata
 
+indicator_by_code = {'x_dim': {
+                        'name':'gdp_pc',
+                        'code':'NY.GDP.PCAP.PP.KD'
+                        },
+                     'y_dim': {
+                        'name':'unemployment_rate',
+                        'code':'UNEMPSA_'
+                        },
+                     'bubble_dim': {
+                        'name':'tech_export',
+                        'code':'TX.VAL.TECH.MF.ZS'
+                        }
+                     }
+
 def get_indicator(x, y):
     indicators = {x: y}
     df = wbdata.get_dataframe(indicators, country="all", convert_date=True)
@@ -17,17 +31,20 @@ def get_regions():
     ct = wbdata.get_country(display=False)
     regions = pandas.DataFrame([(i['id'], i['name'], i['region'].get('value'))
                               for i in ct],
-                              columns=['ID', 'Countries', 'Group'])
+                              columns=['ID', 'Country', 'Group'])
 
-    regions.index = regions.Countries
-    regions.drop('Countries', axis=1, inplace=True)
+    regions.index = regions.Country
+    regions.drop('Country', axis=1, inplace=True)
     return regions
 
 
-def process_data():
-    x_dim = get_indicator(x="NY.GDP.PCAP.PP.KD", y="gdp_pc")
-    y_dim = get_indicator(x="UNEMPSA_", y="unemployment")
-    bubble_dim = get_indicator(x="TX.VAL.TECH.MF.ZS", y="tech_exp")
+def get_data():
+    x_dim = get_indicator(x=indicator_by_code['x_dim'].get('code'), 
+                          y=indicator_by_code['x_dim'].get('name'))
+    y_dim = get_indicator(x=indicator_by_code['y_dim'].get('code'), 
+                          y=indicator_by_code['x_dim'].get('name'))
+    bubble_dim = get_indicator(x=indicator_by_code['bubble_dim'].get('code'), 
+                               y=indicator_by_code['x_dim'].get('name'))
     years = list(x_dim.columns)
     
     a=list(x_dim.index)
@@ -42,6 +59,6 @@ def process_data():
     regions_df = get_regions()
     regions_list=list(regions_df[regions_df.index.isin(list(x_dim.index))].Group.unique())
 
-    return x_dim, y_dim, bubble_dim, regions_df, years, regions_list, ["gdp_pc", 
-                                                                        "unemployment_rate", 
-                                                                        "tech_export"] 
+    return x_dim, y_dim, bubble_dim, regions_df, years, regions_list, [indicator_by_code['x_dim'].get('name'), 
+                                                                       indicator_by_code['y_dim'].get('name'), 
+                                                                       indicator_by_code['bubble_dim'].get('name')] 
